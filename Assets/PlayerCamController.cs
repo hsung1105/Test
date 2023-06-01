@@ -45,7 +45,7 @@ public class PlayerCamController : MonoBehaviour
 
     public static void SetFollwoTarget(Transform followTartget)
     {
-        playerTr = followTartget;
+        
     }
 
     void Positioning()
