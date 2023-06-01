@@ -32,6 +32,12 @@ public class PlayerController : MonoBehaviour
     private float gravityTime;
 
 
+    private float horizontalInput;
+    private float verticalInput;
+    private float moveInput;
+    private float runAccelTime;
+
+
     [SerializeField] private Transform cameraTr;
     [SerializeField] private Transform angleCon;
 
@@ -73,14 +79,27 @@ public class PlayerController : MonoBehaviour
     void SetMoveDir()
     {
         angleCon.position = transform.position;
-        moveDir = new Vector3(Input.GetAxis("Horizontal"),0, Input.GetAxis("Vertical")).normalized;
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
+        moveDir = new Vector3(horizontalInput,0, verticalInput).normalized;
         angleCon.LookAt(angleCon.position + cameraTr.TransformDirection(moveDir));
         transform.rotation = Quaternion.Slerp(transform.rotation, angleCon.rotation, .15f);
-        moveVelo.z = (Mathf.Abs(moveDir.x) + Mathf.Abs(moveDir.z)) *speed;
-        Debug.Log(moveDir);
+        moveInput = Mathf.Max(Mathf.Abs(horizontalInput), Mathf.Abs(verticalInput));
+        if (Input.GetKey(KeyCode.LeftShift) && moveInput > 0.1f)
+        { 
+            runAccelTime += Time.deltaTime;
+        }
+        else
+        { 
+            runAccelTime -= Time.deltaTime;
+        }
+        moveVelo.z = (moveInput + runAccelTime) * speed;
+        runAccelTime = Mathf.Clamp(runAccelTime, 0, 1);
+        anim.SetFloat("Speed", moveInput + runAccelTime);
     }
     
-    
+
+
     void Jump()
     {
         if (Input.GetButtonDown("Jump") && !isJump && isGrounded)

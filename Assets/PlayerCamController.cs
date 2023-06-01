@@ -17,6 +17,8 @@ public class PlayerCamController : MonoBehaviour
 
 
     private Vector3 movePos;
+    private Vector3 refSpeedVec = Vector3.zero;
+    
 
     private float mouseInputY;
     private float mouseInputX;
@@ -41,22 +43,15 @@ public class PlayerCamController : MonoBehaviour
         Rotate();
     }
 
+    public static void SetFollwoTarget(Transform followTartget)
+    {
+        playerTr = followTartget;
+    }
+
     void Positioning()
     {
-        movePos = playerTr.position + Vector3.up * 0.5f;
-        if (Input.GetAxis("Horizontal") > 0)
-        {
-            movePos += transform.TransformDirection(new Vector3(1, 0, 0.7f));
-        }
-        else if (Input.GetAxis("Horizontal") < 0)
-        {
-            movePos += transform.TransformDirection(new Vector3(-1, 0, 0.7f));
-        }
-        if (Input.GetAxis("Vertical") < 0)
-        {
-            movePos += transform.TransformDirection(new Vector3(0, 0, -1.4f));
-        }
-        transform.position = Vector3.MoveTowards(transform.position, movePos, 27.5f * Time.smoothDeltaTime);
+        movePos = playerTr.position + Vector3.up * 0.8f;
+        transform.position = Vector3.SmoothDamp(transform.position, movePos, ref refSpeedVec, 1f * Time.smoothDeltaTime);
     }
 
     void Rotate()
